@@ -1,11 +1,33 @@
+#pragma warning disable CS8604
 using Cyh.Net.Data.Logs;
 using Cyh.Net.Data.Models;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Cyh.Net.Data
 {
     public static class Pipeline
     {
+        public static unsafe bool SaveResult<T>(delegate*<T, void> save, T? saver, DataTransResult? result) {
+            if (saver == null) {
+                result?.OnTransact(Data.Logs.FAILURE_REASON.INV_SRCS);
+                result?.OnFinish(false);
+                return false;
+            }
+            try {
+                save(saver);
+                result?.OnFinish(true);
+                return true;
+            } catch (Exception ex) {
+                if (result != null) {
+                    result.Message = $"Exception: {ex.Message}," +
+#if DEBUG
+                        $" InnerException: {ex.InnerException?.Message}";
+#endif
+                }
+                result?.OnFinish(false);
+                return false;
+            }
+        }
+
         private static NEXT_ACTION GetNextAction<T, U, V>(T? source, U? data, V? saver, DataTransResult? result) {
             NEXT_ACTION retVal = NEXT_ACTION.NORM;
             if (data == null) {
@@ -28,9 +50,7 @@ namespace Cyh.Net.Data
 
             switch (act) {
                 case NEXT_ACTION.NORM: {
-#pragma warning disable CS8604
                     exec(source, data);
-#pragma warning restore
                     break;
                 }
                 case NEXT_ACTION.PASS: {
@@ -43,22 +63,7 @@ namespace Cyh.Net.Data
             }
 
             if (exec_now) {
-                try {
-#pragma warning disable CS8604
-                    save(saver);
-#pragma warning restore
-                    result?.OnFinish(true);
-                    return true;
-                } catch (Exception ex) {
-                    if (result != null) {
-                        result.Message = $"Exception: {ex.Message}," +
-#if DEBUG
-                            $" InnerException: {ex.InnerException?.Message}";
-#endif 
-                    }
-                    result?.OnFinish(false);
-                    return false;
-                }
+                return SaveResult(save, saver, result);
             }
             return true;
         }
@@ -72,9 +77,7 @@ namespace Cyh.Net.Data
             switch (act) {
                 case NEXT_ACTION.NORM: {
                     foreach (U? data in datas) {
-#pragma warning disable CS8604
                         exec(source, data);
-#pragma warning restore
                     }
                     break;
                 }
@@ -88,22 +91,7 @@ namespace Cyh.Net.Data
             }
 
             if (exec_now) {
-                try {
-#pragma warning disable CS8604
-                    save(saver);
-#pragma warning restore
-                    result?.OnFinish(true);
-                    return true;
-                } catch (Exception ex) {
-                    if (result != null) {
-                        result.Message = $"Exception: {ex.Message}," +
-#if DEBUG
-                            $" InnerException: {ex.InnerException?.Message}";
-#endif 
-                    }
-                    result?.OnFinish(false);
-                    return false;
-                }
+                return SaveResult(save, saver, result);
             }
             return true;
         }

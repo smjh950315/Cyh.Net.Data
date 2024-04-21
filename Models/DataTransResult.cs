@@ -7,11 +7,9 @@ namespace Cyh.Net.Data.Models
     /// </summary>
     public class DataTransResult
     {
-        static DateTime DefaultTime => DateTime.MinValue;
-
         private List<TransactionDetail>? _Details;
 
-        internal void OnSucceess() {
+        private void OnSucceess() {
             if (this.IsFinished) { return; }
             this.EndTime = DateTime.Now;
             this.IsFinished = true;
@@ -23,7 +21,7 @@ namespace Cyh.Net.Data.Models
                 }
             }
         }
-        internal void OnFail() {
+        private void OnFail() {
             if (this.IsFinished) { return; }
             this.EndTime = DateTime.Now;
             this.IsFinished = true;
@@ -79,6 +77,11 @@ namespace Cyh.Net.Data.Models
         }
 
         /// <summary>
+        /// The user who invoke the transaction.
+        /// </summary>
+        public string? Invoker { get; set; }
+
+        /// <summary>
         /// Total count of transaction in this batch.
         /// </summary>
         public int TotalCount => this._Details?.Count ?? 0;
@@ -122,5 +125,10 @@ namespace Cyh.Net.Data.Models
                 return this._Details;
             }
         }
+
+        /// <summary>
+        /// Serialized additional model ( optional )
+        /// </summary>
+        public string? SerializedModel { get; set; }
     }
 }

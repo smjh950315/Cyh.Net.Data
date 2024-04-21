@@ -78,5 +78,17 @@ namespace Cyh.Net.Data
         /// <para>*Warning! If no range input, return all satisfied elements.</para>
         /// </returns>
         IEnumerable<T> GetAllByDesc<TKey>(Expression<Func<T, bool>>? predicate, Expression<Func<T, TKey>>? order, DataRange? dataRange, DataTransResult? result);
+
+        /// <summary>
+        /// Add an element into data sets.
+        /// </summary>
+        /// <returns></returns>
+        DataTransResult Add(T? data, DataTransResult? result, bool exec_now);
+
+        /// <summary>
+        /// Update an element exist in data sets.
+        /// </summary>
+        /// <returns></returns>
+        DataTransResult Update(T? data, DataTransResult? result, bool exec_now);
     }
 }

@@ -38,7 +38,12 @@ namespace Cyh.Net.Data
         public IEnumerable<TView> GetAllByDesc<TKey>(Expression<Func<TView, bool>>? predicate, Expression<Func<TView, TKey>>? order, DataRange? dataRange, DataTransResult? result) {
             return this.TryGetAllByDesc(predicate, order, dataRange, result);
         }
-
+        public DataTransResult Add(TView? data, DataTransResult? result, bool exec_now) {
+            return this.TryAdd(data, result, exec_now);
+        }
+        public DataTransResult Update(TView? data, DataTransResult? result, bool exec_now) {
+            return this.TryUpdate(data, result, exec_now);
+        }
 
         public abstract Expression<Func<TView, TData>> GetExprToData(TView? x = default);
 

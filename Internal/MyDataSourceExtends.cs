@@ -2,10 +2,10 @@ using Cyh.Net.Data.Models;
 
 namespace Cyh.Net.Data.Internal
 {
-    using System.Linq.Expressions;
     using Cyh.Net.Data.Logs;
+    using System.Linq.Expressions;
 
-    internal static class MyDSHelper
+    internal static class MyDataSourceExtends
     {
         private static T? First<T>(IQueryable<T> values, Expression<Func<T, bool>>? filter_expr) {
             if (filter_expr == null) {
@@ -21,7 +21,6 @@ namespace Cyh.Net.Data.Internal
                 return values.Where(filter_expr);
             }
         }
-
         private static IQueryable<T> All<T>(IQueryable<T> values, DataRange? dataRange) {
             if (dataRange == null) {
                 return values;
@@ -29,11 +28,9 @@ namespace Cyh.Net.Data.Internal
                 return values.Skip(dataRange.Begin).Take(dataRange.Count);
             }
         }
-
         private static IQueryable<T> All<T>(IQueryable<T> values, Expression<Func<T, bool>>? filter_expr, DataRange? dataRange) {
             return All(All(values, filter_expr), dataRange);
         }
-
         private static IQueryable<T> All_Asc<T, TKey>(IQueryable<T> values, Expression<Func<T, bool>>? filter_expr, Expression<Func<T, TKey>>? order, DataRange? dataRange) {
             if (order == null) {
                 return All(All(values, filter_expr), dataRange);
@@ -48,7 +45,6 @@ namespace Cyh.Net.Data.Internal
                 return All(All(values, filter_expr).OrderByDescending(order), dataRange);
             }
         }
-
         private static bool HasAny<T>(IQueryable<T> queryable, Expression<Func<T, bool>>? filter_expr) {
             if (filter_expr == null) {
                 return queryable.Any();
@@ -56,7 +52,6 @@ namespace Cyh.Net.Data.Internal
                 return queryable.Any(filter_expr);
             }
         }
-
         private static int GetCount<T>(IQueryable<T> queryable, Expression<Func<T, bool>>? filter_expr) {
             if (filter_expr == null) {
                 return queryable.Count();
@@ -64,19 +59,16 @@ namespace Cyh.Net.Data.Internal
                 return queryable.Count(filter_expr);
             }
         }
-
         internal static bool HasAny<T, V>(this IMyDataSource<T> dataSource, Expression<Func<T, V>> convert_expr, Expression<Func<V, bool>>? filter_expr) {
             if (dataSource.Queryable == null) { return false; }
             if (filter_expr == null) { return dataSource.Queryable.Any(); }
             return HasAny(dataSource.Queryable.Select(convert_expr), filter_expr);
         }
-
         internal static int GetCount<T, V>(this IMyDataSource<T> dataSource, Expression<Func<T, V>> convert_expr, Expression<Func<V, bool>>? filter_expr) {
             if (dataSource.Queryable == null) { return 0; }
             if (filter_expr == null) { return dataSource.Queryable.Count(); }
             return GetCount(dataSource.Queryable.Select(convert_expr), filter_expr);
         }
-
         internal static V? GetSingle<T, V>(
             this IMyDataSource<T> dataSource,
             Expression<Func<T, V>> convert_expr,
@@ -148,6 +140,7 @@ namespace Cyh.Net.Data.Internal
                 }
                 return dataSource.TryUpdate(updating_list, result, exec_now);
             } else {
+                result?.OnTransact(FAILURE_REASON.INV_DATA);
                 return false;
             }
         }
