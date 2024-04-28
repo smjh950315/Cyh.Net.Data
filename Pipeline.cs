@@ -67,6 +67,7 @@ namespace Cyh.Net.Data
             }
             return true;
         }
+
         public static unsafe bool Execute<T, U, V>(
             delegate*<T, U, void> exec, delegate*<V, void> save,
             T? source, IEnumerable<U> datas, V? saver,

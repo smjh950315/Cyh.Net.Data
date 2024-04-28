@@ -1,4 +1,5 @@
 using Cyh.Net.Data.Logs;
+using System.Runtime.CompilerServices;
 
 namespace Cyh.Net.Data.Models
 {
@@ -49,6 +50,7 @@ namespace Cyh.Net.Data.Models
         /// <param name="reason"></param>
         /// <param name="message"></param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int OnTransact(FAILURE_REASON reason = FAILURE_REASON.NOT_SAVED, string? message = null) {
             int index = this.TotalCount;
             this.Details.Add(new TransactionDetail

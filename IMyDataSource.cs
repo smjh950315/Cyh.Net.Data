@@ -4,7 +4,6 @@ namespace Cyh.Net.Data
 {
     public interface IMyDataSource
     {
-
         bool TryAdd(object? @object, DataTransResult? transResult, bool exec_now);
 
         bool TryUpdate(object? @object, DataTransResult? transResult, bool exec_now);
@@ -13,7 +12,6 @@ namespace Cyh.Net.Data
     }
     public interface IMyDataSource<T> : IMyDataSource
     {
-
         IQueryable<T>? Queryable { get; }
 
         /// <summary>

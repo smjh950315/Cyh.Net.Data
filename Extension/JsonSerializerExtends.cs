@@ -33,7 +33,7 @@ namespace Cyh.Net.Data.Extension
         unsafe public static string JsonSerialize<TModel>(this IJsonSerializer? controllerBase, TModel? model, JsonSerializerOptions? options = null) {
             if (model is null) { return String.Empty; }
             try {
-                return JsonSerializer.Serialize<TModel>(model, options) ?? String.Empty;
+                return JsonSerializer.Serialize(model, options) ?? String.Empty;
             } catch {
                 return String.Empty;
             }

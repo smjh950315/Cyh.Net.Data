@@ -4,9 +4,11 @@ namespace Cyh.Net.Data.Internal
 {
     using Cyh.Net.Data.Logs;
     using System.Linq.Expressions;
+    using System.Runtime.CompilerServices;
 
     internal static class MyDataSourceExtends
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static T? First<T>(IQueryable<T> values, Expression<Func<T, bool>>? filter_expr) {
             if (filter_expr == null) {
                 return values.FirstOrDefault();
@@ -14,6 +16,8 @@ namespace Cyh.Net.Data.Internal
                 return values.FirstOrDefault(filter_expr);
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static IQueryable<T> All<T>(IQueryable<T> values, Expression<Func<T, bool>>? filter_expr) {
             if (filter_expr == null) {
                 return values;
@@ -21,6 +25,8 @@ namespace Cyh.Net.Data.Internal
                 return values.Where(filter_expr);
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static IQueryable<T> All<T>(IQueryable<T> values, DataRange? dataRange) {
             if (dataRange == null) {
                 return values;
@@ -28,9 +34,13 @@ namespace Cyh.Net.Data.Internal
                 return values.Skip(dataRange.Begin).Take(dataRange.Count);
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static IQueryable<T> All<T>(IQueryable<T> values, Expression<Func<T, bool>>? filter_expr, DataRange? dataRange) {
             return All(All(values, filter_expr), dataRange);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static IQueryable<T> All_Asc<T, TKey>(IQueryable<T> values, Expression<Func<T, bool>>? filter_expr, Expression<Func<T, TKey>>? order, DataRange? dataRange) {
             if (order == null) {
                 return All(All(values, filter_expr), dataRange);
@@ -38,6 +48,8 @@ namespace Cyh.Net.Data.Internal
                 return All(All(values, filter_expr).OrderBy(order), dataRange);
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static IQueryable<T> All_Desc<T, TKey>(IQueryable<T> values, Expression<Func<T, bool>>? filter_expr, Expression<Func<T, TKey>>? order, DataRange? dataRange) {
             if (order == null) {
                 return All(All(values, filter_expr), dataRange);
@@ -45,6 +57,8 @@ namespace Cyh.Net.Data.Internal
                 return All(All(values, filter_expr).OrderByDescending(order), dataRange);
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool HasAny<T>(IQueryable<T> queryable, Expression<Func<T, bool>>? filter_expr) {
             if (filter_expr == null) {
                 return queryable.Any();
@@ -52,6 +66,8 @@ namespace Cyh.Net.Data.Internal
                 return queryable.Any(filter_expr);
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int GetCount<T>(IQueryable<T> queryable, Expression<Func<T, bool>>? filter_expr) {
             if (filter_expr == null) {
                 return queryable.Count();
