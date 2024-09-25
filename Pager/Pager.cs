@@ -66,8 +66,6 @@ namespace Cyh.Net.Data.Pager
         }
         class PageList<T> : IPageList<T>
         {
-            readonly IQueryable<T> m_source;
-            readonly Expression<Func<T, bool>> m_predicate;
             IEnumerable<T> m_items;
             public IPage<T> this[int page]
             {
@@ -83,21 +81,19 @@ namespace Cyh.Net.Data.Pager
 
             public PageList(IQueryable<T> source, Expression<Func<T, bool>> predicate, int pageSize = 10)
             {
-                this.m_source = source;
-                this.m_predicate = predicate;
                 this.PageSize = pageSize;
-                this.m_items = this.m_source.AsEnumerable();
+                this.m_items = source.Where(predicate);
             }
 
             public void OrderBy<TKey>(Func<T, TKey> func, int direction)
             {
                 if (direction >= 0)
                 {
-                    this.m_items = this.m_source.OrderBy(func);
+                    this.m_items = this.m_items.OrderBy(func);
                 }
                 else
                 {
-                    this.m_items = this.m_source.OrderByDescending(func);
+                    this.m_items = this.m_items.OrderByDescending(func);
                 }
             }
 
@@ -117,7 +113,7 @@ namespace Cyh.Net.Data.Pager
 
             public int PageSize { get; set; }
 
-            public int TotalCount => this.m_source.Count(this.m_predicate);
+            public int TotalCount => this.m_items.Count();
 
             public IEnumerable<IPage<T>> Pages => this;
 
