@@ -10,6 +10,6 @@
     public interface IPageList<T> : IPageList, IEnumerable<IPage<T>>
     {
         new IEnumerable<IPage<T>> Pages { get; }
-        IPage<T> this[int index] { get; set; }
+        IPage<T> this[int index] { get; }
     }
 }
