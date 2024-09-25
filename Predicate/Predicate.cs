@@ -124,16 +124,26 @@ namespace Cyh.Net.Data.Predicate
                             case CompareType.Contains:
                             {
                                 Type memberType = this.MemberExpression.Type;
+                                Type constantType = this.ConstantExpression.Type;
+                                Type constantEnumerableType = GenericEnumerable.MakeGenericType(constantType);
                                 if (memberType == typeof(string))
                                 {
-#pragma warning disable CS8600
                                     this.BodyExpression = Expression.Call(this.MemberExpression, Predicate.StringContainsMethod, this.ConstantExpression);
-#pragma warning restore CS8600
+                                }
+                                else if (memberType.IsAssignableTo(constantEnumerableType))
+                                {
+                                    this.BodyExpression = Expression.Call(null, Predicate.MakeGenericContains(constantType), this.MemberExpression, this.ConstantExpression);
                                 }
                                 else
                                 {
-                                    this.BodyExpression = Expression.Call(null, Predicate.MakeGenericContains(memberType), this.ConstantExpression, this.MemberExpression);
+                                    throw new NotSupportedException("Invalid type expression");
                                 }
+                                break;
+                            }
+                            case CompareType.IsAnyOf:
+                            {
+                                Type memberType = this.MemberExpression.Type;
+                                this.BodyExpression = Expression.Call(null, Predicate.MakeGenericContains(memberType), this.ConstantExpression, this.MemberExpression);
                                 break;
                             }
                             default:
@@ -199,16 +209,17 @@ namespace Cyh.Net.Data.Predicate
         static Dictionary<Type, MethodInfo> GenericContains;
         static MethodInfo EnumerableGenericContainsMethod;
         static MethodInfo StringContainsMethod;
+        static Type GenericEnumerable;
         static MethodInfo MakeGenericContains(Type _type)
         {
             Type type = _type.RemoveNullable();
-            MethodInfo? baseContains = null;
-            if (!GenericContains.TryGetValue(type, out baseContains))
+            MethodInfo? genericContains = null;
+            if (!GenericContains.TryGetValue(type, out genericContains))
             {
-                baseContains = EnumerableGenericContainsMethod.MakeGenericMethod(type);
-                GenericContains.Add(type, baseContains);
+                genericContains = EnumerableGenericContainsMethod.MakeGenericMethod(type);
+                GenericContains.Add(type, genericContains);
             }
-            return baseContains.MakeGenericMethod(type);
+            return genericContains;
         }
         static MethodInfo MakeGenericContains<T>()
         {
@@ -227,6 +238,7 @@ namespace Cyh.Net.Data.Predicate
             IEnumerable<MethodInfo> methodInfos = typeof(Enumerable).GetMethods().Where(m => m.Name == "Contains");
             EnumerableGenericContainsMethod = methodInfos.FirstOrDefault(x => x.GetParameters().Length == 2)!;
             StringContainsMethod = typeof(string).GetMethod("Contains", new Type[] { typeof(string) })!;
+            GenericEnumerable = typeof(IEnumerable<>);
         }
 
         private static object? GetPropertyValue(object? src, string name)

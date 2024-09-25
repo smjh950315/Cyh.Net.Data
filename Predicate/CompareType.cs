@@ -10,5 +10,6 @@
         LessThan = 5,
         LessThanOrEqual = 6,
         Contains = 7,
+        IsAnyOf = 8
     }
 }
