@@ -292,7 +292,7 @@ namespace Cyh.Net.Data.Predicate
             return GetExpression<T>(memberName, compareType, constantValue);
         }
 
-        public static Expression<Func<T, bool>>? GetExpression<T>(IEnumerable<ParameterData> parameterDatas)
+        public static Expression<Func<T, bool>>? GetExpression<T>(IEnumerable<ExpressionData> parameterDatas)
         {
             if (parameterDatas == null) return null;
             var iterator = parameterDatas.GetEnumerator();

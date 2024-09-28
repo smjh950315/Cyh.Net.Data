@@ -1,6 +1,6 @@
 ﻿namespace Cyh.Net.Data.Predicate
 {
-    public class ParameterData
+    public class ExpressionData
     {
         public string MemberName { get; set; } = string.Empty;
         public LinkType LinkType { get; set; }
