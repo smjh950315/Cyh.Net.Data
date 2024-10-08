@@ -2,7 +2,7 @@
 {
     public interface IDataSource
     {
-        object? BeginTransaction();
+        IDisposable? BeginTransaction();
         void CommitTransaction();
         void RollbackTransaction();
         IQueryable<T> GetQueryable<T>() where T : class;
