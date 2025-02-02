@@ -112,7 +112,7 @@ namespace Cyh.Net.Data.Predicate
                 return begin;
             }
             Expression<Func<T, bool>> result = begin;
-            foreach (var predicateData in expressionHolders)
+            foreach (ExpressionHolder<T> predicateData in expressionHolders)
             {
                 bool _and;
                 if (predicateData.LinkType == LinkType.And)
@@ -128,7 +128,7 @@ namespace Cyh.Net.Data.Predicate
                     throw new InvalidDataException(nameof(predicateData.LinkType));
                 }
 
-                var predicate = predicateData.Expression;
+                Expression<Func<T, bool>> predicate = predicateData.Expression;
 
                 if (predicate != null)
                 {
@@ -209,7 +209,7 @@ namespace Cyh.Net.Data.Predicate
 
             public Expression<Func<T, bool>> GetPredicate(PropertyInfo memberProperty, object? constantValue)
             {
-                var metaPredicate = new MetaExpression<T>();
+                MetaExpression<T> metaPredicate = new MetaExpression<T>();
                 metaPredicate.BindMember(memberProperty);
                 metaPredicate.BindConstant(constantValue);
                 return metaPredicate.GetPredicate(this.CompareType)!;
@@ -217,7 +217,7 @@ namespace Cyh.Net.Data.Predicate
 
             public Expression<Func<T, bool>> GetPredicate(string memberName, object? constantValue)
             {
-                var metaPredicate = new MetaExpression<T>();
+                MetaExpression<T> metaPredicate = new MetaExpression<T>();
                 metaPredicate.BindMember(memberName);
                 metaPredicate.BindConstant(constantValue);
                 return metaPredicate.GetPredicate(this.CompareType)!;
@@ -263,7 +263,7 @@ namespace Cyh.Net.Data.Predicate
         private static object? GetPropertyValue(object? src, string name)
         {
             if (src == null) return null;
-            var property = src.GetType().GetProperty(name);
+            PropertyInfo? property = src.GetType().GetProperty(name);
             try
             {
                 return property?.GetValue(src);
@@ -296,13 +296,13 @@ namespace Cyh.Net.Data.Predicate
         public static Expression<Func<T, bool>>? GetExpression<T>(IEnumerable<ExpressionData> parameterDatas)
         {
             if (parameterDatas == null) return null;
-            var iterator = parameterDatas.GetEnumerator();
+            IEnumerator<ExpressionData> iterator = parameterDatas.GetEnumerator();
 
             PredicateHolder<T>? predicateHolder = null;
 
             while (iterator.MoveNext())
             {
-                var predicate = GetExpression<T>(iterator.Current.MemberName, iterator.Current.CompareType, iterator.Current.ConstantValue);
+                Expression<Func<T, bool>>? predicate = GetExpression<T>(iterator.Current.MemberName, iterator.Current.CompareType, iterator.Current.ConstantValue);
                 if (predicate == null) continue;
                 if (predicateHolder == null)
                 {
