@@ -12,9 +12,6 @@ namespace Cyh.Net.Data
     public interface IDataRepository<T> : IDataRepository where T : class
     {
         IQueryable<T> Queryable { get; }
-        bool Any(Expression<Func<T, bool>> predicate);
-        IQueryable<T> Where(Expression<Func<T, bool>> predicate);
-        IQueryable<V> Select<V>(Expression<Func<T, V>> selector);
         void Add(T entity);
         void Update(T entity);
         void Remove(T entity);

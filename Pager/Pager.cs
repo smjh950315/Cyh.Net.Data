@@ -11,10 +11,10 @@ namespace Cyh.Net.Data.Pager
             public Page(IEnumerable<T> items, int pageIndex)
             {
                 this.m_items = items;
-                this.PageIndex = pageIndex;
+                this.Index = pageIndex;
             }
 
-            public int PageIndex { get; set; }
+            public int Index { get; set; }
             public IEnumerable<T> Items => this.m_items;
 
             IEnumerable IPage.Items => this.Items;
@@ -34,7 +34,7 @@ namespace Cyh.Net.Data.Pager
 
             int MaxPageCount()
             {
-                return this.m_parent.PageCount;
+                return this.m_parent.Count;
             }
             public IPage<T> Current
             {
@@ -97,11 +97,11 @@ namespace Cyh.Net.Data.Pager
                 }
             }
 
-            public int PageCount
+            public int Count
             {
                 get
                 {
-                    int totalCount = this.TotalCount;
+                    int totalCount = this.Total;
                     int result = totalCount / this.PageSize;
                     if (totalCount != result * this.PageSize)
                     {
@@ -113,7 +113,7 @@ namespace Cyh.Net.Data.Pager
 
             public int PageSize { get; set; }
 
-            public int TotalCount => this.m_items.Count();
+            public int Total => this.m_items.Count();
 
             public IEnumerable<IPage<T>> Pages => this;
 

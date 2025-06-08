@@ -12,6 +12,12 @@ namespace Cyh.Net.Data
         {
             return predicate != null ? dataRepository.Queryable.Where(predicate) : dataRepository.Queryable;
         }
+        public static T? FirstOrDefault<T>(this IDataRepository<T> repository, Expression<Func<T, bool>>? predicate) where T : class
+        {
+            if (predicate == null)
+                return repository.Queryable.FirstOrDefault();
+            return repository.Queryable.FirstOrDefault(predicate);
+        }
         public static IQueryable<V> Select<T, V>(this IDataRepository<T> dataRepository, Expression<Func<T, V>> selector) where T : class
         {
             return dataRepository.Queryable.Select(selector);
