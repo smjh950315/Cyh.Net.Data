@@ -4,6 +4,6 @@ namespace Cyh.Net.Data
 {
     public interface IDbConnectionBuilder
     {
-        IDbConnection CreateDbConnection();
+        IDbConnection CreateConnection();
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Data;
+using System.Linq.Expressions;
 
 namespace Cyh.Net.Data
 {
@@ -22,5 +23,11 @@ namespace Cyh.Net.Data
         {
             return dataRepository.Queryable.Select(selector);
         }
+
+        public static IScopedDbConnectionBuilder GetScopedDbConnectionBuilder(Func<IDbConnection> connectionFactory, bool showConnectionTrack = false)
+        {
+            return new ScopedDbConnectionBuilder(connectionFactory, showConnectionTrack);
+        }
+
     }
 }
