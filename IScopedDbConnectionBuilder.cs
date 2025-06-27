@@ -153,10 +153,6 @@ namespace Cyh.Net.Data
                     Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Connection created with Track ID: {this._trackId}");
                 }
             }
-            if (this._connection.State != ConnectionState.Open)
-            {
-                this._connection.Open();
-            }
             return this._connection;
         }
 
