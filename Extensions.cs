@@ -38,9 +38,11 @@ namespace Cyh.Net.Data
         static Dictionary<Type, object?> _cachedTypeDefaultValue = new();
         static MethodInfo? _cachedMethodForSelectorExpr;
         static Dictionary<Type, PropertyInfo[]> _cachedTypeProperties = new();
-        static Dictionary<string, object> _cachedSelectExpressions = new();
+        static Dictionary<string, object> _cachedByNameSelectExpressions = new();
         static Dictionary<Type, Func<MemberExpression, Expression>> _cachedToStringExpressionMaker = new();
         static Type[] _builtinTypes;
+        static readonly MethodInfo _Prototype_MakeByNameSelectExpression = typeof(QueryableExtension).GetMethod(nameof(MakeByNameSelectExpression), BindingFlags.Static | BindingFlags.Public, [])!;
+
         static QueryableExtension()
         {
             // Pre-cache common value type default values
@@ -268,12 +270,12 @@ namespace Cyh.Net.Data
             }
         }
 
-        static Expression<Func<TSource, TTarget>> MakeSelectExpression<TSource, TTarget>() where TSource : class where TTarget : class
+        public static Expression<Func<TSource, TTarget>> MakeByNameSelectExpression<TSource, TTarget>() where TSource : class where TTarget : class
         {
             Type sourceType = typeof(TSource);
             Type targetType = typeof(TTarget);
             string cacheKey = $"{sourceType.FullName}->{targetType.FullName}";
-            if (_cachedSelectExpressions.TryGetValue(cacheKey, out var cachedExpr))
+            if (_cachedByNameSelectExpressions.TryGetValue(cacheKey, out var cachedExpr))
             {
                 return (Expression<Func<TSource, TTarget>>)cachedExpr;
             }
@@ -303,15 +305,23 @@ namespace Cyh.Net.Data
             Type funcType = typeof(Func<,>).MakeGenericType(sourceType, targetType);
             object expr = _cachedMethodForSelectorExpr.MakeGenericMethod(funcType)
                 .Invoke(null, [exprInit, false, new ParameterExpression[] { parameter }])!;
-            _cachedSelectExpressions[cacheKey] = expr;
+            _cachedByNameSelectExpressions[cacheKey] = expr;
             return (Expression<Func<TSource, TTarget>>)expr;
+        }
+
+        public static object MakeByNameSelectExpression(Type sourceType, Type targetType)
+        {
+            string cacheKey = $"{sourceType.FullName}->{targetType.FullName}";
+            if (_cachedByNameSelectExpressions.TryGetValue(cacheKey, out object? expr))
+                return expr;
+            return _Prototype_MakeByNameSelectExpression.MakeGenericMethod(sourceType, targetType).Invoke(null, [])!;
         }
 
         public static IQueryable<TResult> SelectByNameMapping<TSource, TResult>(this IQueryable<TSource> source)
             where TSource : class
             where TResult : class
         {
-            var selector = MakeSelectExpression<TSource, TResult>();
+            var selector = MakeByNameSelectExpression<TSource, TResult>();
             return source.Select(selector);
         }
     }

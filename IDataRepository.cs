@@ -5,10 +5,10 @@ namespace Cyh.Net.Data
 {
     public interface IDataRepository
     {
-        IDataRepository<T>? GetRepository<T>();
+        IDataRepository<T>? GetRepository<T>() where T : class;
         int SaveChanges();
     }
-    public interface IDataRepository<T> : IDataRepository
+    public interface IDataRepository<T> : IDataRepository where T : class
     {
         IQueryable<T> Queryable { get; }
         void Add(T entity);
@@ -34,7 +34,7 @@ namespace Cyh.Net.Data
             _repositoryFactories.Add(dataType, genericMethod);
             return genericMethod.Invoke(repository, null);
         }
-        public static IDataRepository<T>? GetRepository<T>(this IDataRepository repository)
+        public static IDataRepository<T>? GetRepository<T>(this IDataRepository repository) where T : class
         {
             return (IDataRepository<T>?)GetRepository(repository, typeof(T));
         }
