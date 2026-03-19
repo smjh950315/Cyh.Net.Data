@@ -30,6 +30,10 @@ namespace Cyh.Net.Data
             return new ScopedDbConnectionBuilder(connectionFactory, showConnectionTrack);
         }
 
+        public static IDbConnectionBuilder GetDbConnectionBuilder(Func<IDbConnection> connectionFactory)
+        {
+            return new DbConnectionBuilder(connectionFactory);
+        }
     }
 
     public static class QueryableExtension

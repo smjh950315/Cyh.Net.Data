@@ -6,4 +6,10 @@ namespace Cyh.Net.Data
     {
         IDbConnection CreateConnection();
     }
+    internal class DbConnectionBuilder : IDbConnectionBuilder
+    {
+        Func<IDbConnection> _factory;
+        internal DbConnectionBuilder(Func<IDbConnection> factory) { this._factory = factory; }
+        public IDbConnection CreateConnection() => this._factory();
+    }
 }
